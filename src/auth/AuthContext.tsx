@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, ReactNode } from "react";
 
-// 1. Описываем интерфейс для данных авторизации
+
 interface AuthContextType {
   token: string | null;
   isAuthed: boolean;
@@ -8,7 +8,6 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// 2. Указываем тип при создании контекста
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -40,7 +39,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const ctx = useContext(AuthContext);
   
-  // Благодаря этой проверке TypeScript понимает, что ctx не может быть null ниже по коду
   if (!ctx) {
     throw new Error("useAuth must be used inside AuthProvider");
   }

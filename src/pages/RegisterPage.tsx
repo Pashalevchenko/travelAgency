@@ -1,103 +1,94 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { http } from "../api/http";
+import { useNavigate } from "react-router-dom";
+import { api } from "../api/api";
+
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import Alert from 'react-bootstrap/Alert';
+
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("bob");
-  const [password, setPassword] = useState("123456789");
+  const [password, setPassword] = useState("1234567890");
   const [role, setRole] = useState("USER");
   const [phoneNumber, setPhoneNumber] = useState("380111111111");
   const [error, setError] = useState("");
 
-  
-  const location = useLocation();
+  const navigate = useNavigate();
 
+  const onSubmit = async (e:any) => {
+    e.preventDefault();
+    setError("");
 
-  const onSubmit = async (e: any) => {
-      e.preventDefault();
-      setError("");
-  
-      try {
-        const res = await http.post("/api/auth/register", {
-          username, 
-          password,
-          role,
-          phoneNumber
-        });
-      } catch (err) {
-        
-        setError("Неверный логин/пароль или сервер недоступен");
-      }
-    };
+    try {
+      await api.post("/api/auth/register", {
+        username,
+        password,
+        role,
+        phoneNumber
+      });
+      navigate("/login");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Registration failed");
+    }
+  };
 
   return (
-    <div style={{ maxWidth: 360, margin: "40px auto" }}>
-      <h2>Register</h2>
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "90vh" }}>
+      <Card style={{ width: "100%", maxWidth: "450px" }} className="shadow-sm border-0">
+        <Card.Body className="p-4">
+          <h2 className="text-center mb-4">Create Account</h2>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          autoComplete="username"
-        />
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-        <fieldset style={{ border: "none", padding: 0, display: "flex", gap: 15 }}>
-          <legend style={{ fontSize: "14px", marginBottom: "5px" }}>Select Role:</legend>
-          
-          <label style={{ cursor: "pointer" }}>
-            <input
-              type="radio"
-              name="role"
-              value="ADMIN"
-              checked={role === "ADMIN"}
-              onChange={(e) => setRole(e.target.value)}
-            />
-            Admin
-          </label>
+          {error && <Alert variant="danger">{error}</Alert>}
 
-          <label style={{ cursor: "pointer" }}>
-            <input
-              type="radio"
-              name="role"
-              value="MANAGER"
-              checked={role === "MANAGER"}
-              onChange={(e) => setRole(e.target.value)}
-            />
-            Manager
-          </label>
-          <label style={{ cursor: "pointer" }}>
-            <input
-              type="radio"
-              name="role"
-              value="USER"
-              checked={role === "USER"}
-              onChange={(e) => setRole(e.target.value)}
-            />
-            User
-          </label>
-        </fieldset>
-        <input
-          placeholder="phoneNumber"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          autoComplete="380111111111"
-        />
+          <Form onSubmit={onSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Pick a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-        <button type="submit">Register</button>
-      </form>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Min. 10 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+            <Form.Group className="mb-3">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="380..."
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <p style={{ marginTop: 16, fontSize: 12, opacity: 0.8 }}>
-        Токен сохраняется в localStorage и автоматически добавляется в Authorization header.
-      </p>
-    </div>
-  );    
+            <Button variant="success" type="submit" className="w-100 py-2 fw-bold">
+              Register Now
+            </Button>
+            
+            <div className="text-center mt-3">
+              <small className="text-muted">
+                Already have an account? <a href="/login" className="text-decoration-none">Sign In</a>
+              </small>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
+  );
 }

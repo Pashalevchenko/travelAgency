@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { http } from "../api/http";
 import { useAuth } from "../auth/AuthContext";
+import { api } from "../api/api";
+import { useTranslation } from "react-i18next";
+
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import Alert from 'react-bootstrap/Alert';
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -12,21 +19,22 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/vouchers";
+  const { t } = useTranslation();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await http.post("/api/auth/login", {
+      const res = await api.post("/api/auth/login", {
         userName: username,
         password,
       });
 
-      
-      const token = res.data?.token || res.data?.accessToken || res.data?.jwt;
+
+        const token = res.data?.token;
       if (!token) {
-        setError("Сервер не вернул token/accessToken");
+        setError("Token did not come back from server");
         return;
       }
 
@@ -36,37 +44,51 @@ export default function LoginPage() {
       const msg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        "Неверный логин/пароль или сервер недоступен";
+        "Невірний логін або пароль";
       setError(msg);
     }
   };
 
   return (
-    <div style={{ maxWidth: 360, margin: "40px auto" }}>
-      <h2>Sign in</h2>
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "80vh" }}>
+      <Card style={{ width: "100%", maxWidth: "400px" }} className="shadow-sm">
+        <Card.Body className="p-4">
+          <h2 className="text-center mb-4">Sign In</h2>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          autoComplete="username"
-        />
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-        <button type="submit">Login</button>
-      </form>
+    
+          {error && <Alert variant="danger">{error}</Alert>}
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+          <Form onSubmit={onSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </Form.Group>
 
-      <p style={{ marginTop: 16, fontSize: 12, opacity: 0.8 }}>
-        Токен сохраняется в localStorage и автоматически добавляется в Authorization header.
-      </p>
-    </div>
+            <Form.Group className="mb-4" controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit" className="w-100 py-2">
+              {t("login")}
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }

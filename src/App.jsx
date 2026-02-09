@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import VouchersPage from "./pages/VouchersPage";
 import ProfilePage from "./pages/ProfilePage";
 import RequireAuth from "./auth/RequireAuth";
+import UsersPage from "./pages/UsersPage";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route path="/vouchers" element={<VouchersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/users" element={<UsersPage />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/vouchers" replace />} />
