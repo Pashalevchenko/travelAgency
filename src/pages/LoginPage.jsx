@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
-import { api } from "../api/api";
-import { useTranslation } from "react-i18next";
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { api } from '../api/api';
+import { useTranslation } from 'react-i18next';
 
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -11,30 +11,29 @@ import Container from 'react-bootstrap/Container';
 import Alert from 'react-bootstrap/Alert';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const { setToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || "/vouchers";
+  const from = location.state?.from || '/vouchers';
   const { t } = useTranslation();
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     try {
-      const res = await api.post("/api/auth/login", {
+      const res = await api.post('/api/auth/login', {
         userName: username,
         password,
       });
 
-
-        const token = res.data?.token;
+      const token = res.data?.token;
       if (!token) {
-        setError("Token did not come back from server");
+        setError('Token did not come back from server');
         return;
       }
 
@@ -42,20 +41,20 @@ export default function LoginPage() {
       navigate(from, { replace: true });
     } catch (err) {
       const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        "Невірний логін або пароль";
+        err?.response?.data?.message || err?.response?.data?.error || 'Невірний логін або пароль';
       setError(msg);
     }
   };
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "80vh" }}>
-      <Card style={{ width: "100%", maxWidth: "400px" }} className="shadow-sm">
+    <Container
+      className="d-flex align-items-center justify-content-center"
+      style={{ minHeight: '80vh' }}
+    >
+      <Card style={{ width: '100%', maxWidth: '400px' }} className="shadow-sm">
         <Card.Body className="p-4">
           <h2 className="text-center mb-4">Sign In</h2>
 
-    
           {error && <Alert variant="danger">{error}</Alert>}
 
           <Form onSubmit={onSubmit}>
@@ -84,7 +83,7 @@ export default function LoginPage() {
             </Form.Group>
 
             <Button variant="primary" type="submit" className="w-100 py-2">
-              {t("login")}
+              {t('login')}
             </Button>
           </Form>
         </Card.Body>

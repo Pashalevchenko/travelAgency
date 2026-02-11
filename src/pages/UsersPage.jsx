@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { http } from "../api/http";
-import { getJwtPayload } from "../auth/authToken";
+import React, { useEffect, useState } from 'react';
+import { http } from '../api/http';
+import { getJwtPayload } from '../auth/authToken';
 
 // Импорты Bootstrap
 import Container from 'react-bootstrap/Container';
@@ -12,11 +12,11 @@ import Badge from 'react-bootstrap/Badge';
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   const payload = getJwtPayload();
-  const isAdmin = payload?.role === "ADMIN";
+  const isAdmin = payload?.role === 'ADMIN';
 
   useEffect(() => {
     fetchUsers();
@@ -25,24 +25,20 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await http.get("/api/users");
+      const res = await http.get('/api/users');
       setUsers(res.data);
     } catch (e) {
-      setError(e?.response?.data?.message || "Не удалось загрузить пользователей");
+      setError(e?.response?.data?.message || 'Не удалось загрузить пользователей');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    
-      try {
-        await http.delete(`/api/users/${userId}`);
-        setUsers(prev => prev.filter(u => u.id !== userId));
-      } catch (e) {
-        
-      }
-    
+    try {
+      await http.delete(`/api/users/${userId}`);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    } catch (e) {}
   };
 
   return (
@@ -77,18 +73,20 @@ export default function UsersPage() {
               <tr key={u.id}>
                 <td>{u.id}</td>
                 <td>{u.username}</td>
-                <td>{u.phoneNumber || "-"}</td>
+                <td>{u.phoneNumber || '-'}</td>
                 <td>
-                  <Badge bg={u.role === "ADMIN" ? "danger" : u.role === "MANAGER" ? "warning" : "info"}>
+                  <Badge
+                    bg={u.role === 'ADMIN' ? 'danger' : u.role === 'MANAGER' ? 'warning' : 'info'}
+                  >
                     {u.role}
                   </Badge>
                 </td>
                 <td className="fw-bold text-success">${u.balance}</td>
                 {isAdmin && (
                   <td>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm" 
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
                       onClick={() => handleDeleteUser(u.id)}
                       disabled={u.id === payload.userId}
                     >
@@ -98,9 +96,7 @@ export default function UsersPage() {
                 )}
               </tr>
             ))}
-            
           </tbody>
-          
         </Table>
       )}
     </Container>
